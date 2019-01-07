@@ -1,9 +1,11 @@
 package com.xiangwei.atcrowdfunding.controller;
 
+import java.security.Permission;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
@@ -30,7 +32,7 @@ public class DispatcherController {
 	public String login() {
 		return "login";
 	}
-	//执行登陆获取表单提交参数,入参名必须和表单提交名一致
+	//执行登陆获取表单提交参数,入参名必须和表单提交名一致，废弃
 	@RequestMapping("/doLogin")
 	public String doLogin(User user, Model model){
 		//获取登陆名
@@ -75,12 +77,11 @@ public class DispatcherController {
 	String userpswd = user.getUserpswd();
 	
 		AJAXResult result = new AJAXResult();
-		System.out.println("DispatcherController.doLogin() "+loginacct);
 		User dbUser = userService.query4Login(user);
 		if ( dbUser != null  && dbUser.getUserpswd().equals(userpswd)) {
-//			session.setAttribute("loginUser", dbUser);
-//			
-//			// 获取用户权限信息
+			session.setAttribute("loginUser", dbUser); //放到session作用域中
+			
+			// 获取用户权限信息
 //			List<Permission> permissions = permissionService.queryPermissionsByUser(dbUser);
 //			Map<Integer, Permission> permissionMap = new HashMap<Integer, Permission>();
 //			Permission root = null;
@@ -115,5 +116,11 @@ public class DispatcherController {
 	public String main() {
 		return "main";
 	}
-	
+	//推出登陆
+	@RequestMapping("/logout")
+	public String logout(HttpSession session) {
+		//session.removeAttribute("loginUser");
+		session.invalidate();
+		return "redirect:login";
+	}
 }
